@@ -1,0 +1,18 @@
+{
+  "contracts/ComplicatedBank.sol": {
+    "__sources__": {
+      "contracts/ComplicatedBank.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.26;\r\n\r\ncontract ComplicatedBank {\r\nmapping(address => uint256) balances;\r\naddress[] accounts;\r\naddress public owner;\r\nuint256 rate = 3;\r\nconstructor() {\r\nowner = msg.sender;\r\n}\r\nmodifier onlyOwner() {\r\nrequire(msg.sender == owner, \"You are not owner.\");\r\n_;\r\n}\r\nfunction getbalance() public view returns (uint256) {\r\n    return balances[msg.sender];\r\n}\r\nfunction deposit() public payable {\r\n    if (balances[msg.sender] == 0) {\r\n        accounts.push(msg.sender);\r\n    }\r\n    balances[msg.sender] += msg.value;\r\n}\r\n\r\nfunction withdraw(uint256 moneyWithdraw) public {\r\n    require(balances[msg.sender] >= moneyWithdraw, \"Insufficient money to withdraw!!!\");\r\n\r\n    balances[msg.sender] -= moneyWithdraw;\r\n\r\n    (bool success, ) = msg.sender.call{value: moneyWithdraw}(\"\");\r\n    require(success, \"Withdraw failed!!\");\r\n}\r\n\r\nfunction getSystemBalance() public view onlyOwner returns (uint256) {\r\n    return address(this).balance;\r\n}\r\nfunction calculateInterest(address _user) public view onlyOwner returns (uint) {\r\n    uint interest = balances[_user] * rate / 100;\r\n    return interest;\r\n}\r\n}",
+        "file": "contracts/ComplicatedBank.sol"
+      }
+    }
+  },
+  "contracts/Lottey.sol": {
+    "__sources__": {
+      "contracts/Lottey.sol": {
+        "content": "// SPDX-License-Identifier: UNLICENSED\r\npragma solidity ^0.8.21;\r\n\r\ncontract Lottery {\r\n    address public manager;\r\n    address [] public players;\r\n\r\n    constructor() {\r\n      manager = msg.sender;\r\n\r\n    }\r\n\r\n\r\n    function enter() payable public {\r\n        require(msg.value >= 0.01 ether, \"Please enter more than 0.01 Ether\");\r\n        players.push(msg.sender);\r\n    }\r\n\r\n    function pickWinner()  public {\r\n        require(msg.sender == manager, \"ONLY manager\");\r\n        uint index = random() % players.length; //ขนาดของ players array\r\n        (bool success,) = players[index].call{value: (address(this).balance)}(\"\");\r\n        require(success, \"Transfer failed\");\r\n        players = new address [](0);  // clear array of players\r\n    }\r\n\r\n    function random() private view returns (uint) {\r\n        // คืนค่า เลขสุ่มที่เกิดจากสูตรด้านล่าง ซึ่งมีการใช้วันเวลาของ block  -- ตัวแปร global variable \r\n        return uint(keccak256(abi.encodePacked(block.prevrandao, block.timestamp, players)));\r\n\r\n    }\r\n}",
+        "file": "contracts/Lottey.sol"
+      }
+    }
+  }
+}
