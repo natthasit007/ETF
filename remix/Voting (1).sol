@@ -55,7 +55,7 @@ contract Voting {
         require(!isVoted[msg.sender], "ALREADY VOTED");
         require(isValidCandidate(candidate), "INVALID CANDIDATE");
 
-        isVoted[msg.sender] == true;
+        isVoted[msg.sender] = true;
         votesReceived[candidate] += 1;
     }
 
